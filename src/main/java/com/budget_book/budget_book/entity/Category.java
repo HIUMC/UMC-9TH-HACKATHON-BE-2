@@ -21,8 +21,9 @@ public class Category {
     private Long categoryId;
 
     // 실제로는 User 엔티티와 @ManyToOne 관계 해줘야함
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(length = 20, nullable = false)
     private String  name;
@@ -40,8 +41,8 @@ public class Category {
 
 
     // 생성자 (Builder 패턴을 사용하면 더 좋습니다)
-    public Category(Long userId, String name, CategoryType type) {
-        this.userId = userId;
+    public Category(User userId, String name, CategoryType type) {
+        this.user = userId;
         this.name = name;
         this.type = type;
     }
