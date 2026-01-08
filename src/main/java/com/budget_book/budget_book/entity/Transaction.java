@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,13 +26,16 @@ public class Transaction {
     private BigInteger amount;
 
     @Column(name="date", nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(name = "memo", length = 50)
     private String memo;
 
     @Column(name = "img_url")
     private String imgUrl;
+
+    @Column(name = "type", nullable = false)
+    private Type type;
 
     @CreatedDate
     @Column(name = "create_at", nullable = false)
@@ -42,7 +46,7 @@ public class Transaction {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cateory_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
 }

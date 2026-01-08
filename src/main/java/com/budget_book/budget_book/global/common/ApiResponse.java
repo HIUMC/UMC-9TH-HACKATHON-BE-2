@@ -1,5 +1,6 @@
 package com.budget_book.budget_book.global.common;
 
+import com.budget_book.budget_book.dto.response.TransactionResDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -22,7 +23,7 @@ public class ApiResponse<T> {
     private final T result;
 
     // 성공 시 응답 생성 메서드
-    public static <T> ApiResponse<T> onSuccess(T result) {
+    public static <T> ApiResponse<T> onSuccess(T result, TransactionResDTO.PostTransactionDTO postTransactionDTO) {
         return new ApiResponse<>(true, "COMMON200", "요청에 성공하였습니다.", result);
     }
 
