@@ -46,18 +46,25 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # 실행 중인 Spring Boot 프로세스 찾아서 종료
+            # 1. 실행 중인 이전 프로세스 종료 (SIGTERM 후 안 죽으면 SIGKILL)
             PID=$(pgrep -f .jar)
-            if [ -z "$PID" ]; then
-              echo "실행 중인 프로세스가 없습니다."
-            else
-              echo "실행 중인 프로세스 종료: $PID"
-              kill -9 $PID
+            if [ -n "$PID" ]; then
+              echo "기존 프로세스 종료 시도 (PID: $PID)"
+              kill -15 $PID
+              sleep 5
+              # 여전히 살아있다면 강제 종료
+              kill -9 $PID 2>/dev/null || true
             fi
 
-            # 잠시 대기
-            sleep 5
+            # 2. 기존 JAR 파일 관리 (파일이 쌓여서 생기는 와일드카드 오류 방지)
+            mkdir -p /home/ubuntu/app/old
+            mv /home/ubuntu/app/*.jar /home/ubuntu/app/old/ 2>/dev/null || true
+            mv /home/ubuntu/app/old/$(ls -t /home/ubuntu/app/old/ | head -1) /home/ubuntu/app/application.jar
 
-            # 새 Jar 파일 실행 (nohup으로 백그라운드 실행)
-            echo "새 애플리케이션 배포 시작..."
-            nohup java -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
+            # 3. 새 Jar 파일 실행 (메모리 제한 옵션 필수!)
+            echo "새 애플리케이션 배포 시작 (Limit: 512MB)..."
+            nohup java -Xmx512M -Xms512M -jar /home/ubuntu/app/application.jar > /home/ubuntu/app/nohup.out 2>&1 &
+            
+            # 4. 실행 확인 (선택 사항)
+            sleep 2
+            ps -ef | grep application.jarava -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
