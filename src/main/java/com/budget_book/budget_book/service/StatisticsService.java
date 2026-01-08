@@ -46,14 +46,14 @@ public class StatisticsService {
 
         // 5. 총 지출 계산 (Type.EXPENSE)
         BigInteger totalExpense = transactions.stream()
-                .filter(t -> t.getType() == Type.EXPENSE)
+                .filter(t -> t.getType() == Type.OUTCOME)
                 .map(Transaction::getAmount)
                 .reduce(BigInteger.ZERO, BigInteger::add);
 
         // 6. 카테고리별 지출 통계 계산
         // (지출 내역만 필터링 -> 카테고리 이름으로 그룹핑 -> 금액 합계 계산)
         Map<String, BigInteger> categoryMap = transactions.stream()
-                .filter(t -> t.getType() == Type.EXPENSE)
+                .filter(t -> t.getType() == Type.OUTCOME)
                 .collect(Collectors.groupingBy(
                         t -> t.getCategory().getName(),
                         Collectors.reducing(BigInteger.ZERO, Transaction::getAmount, BigInteger::add)
