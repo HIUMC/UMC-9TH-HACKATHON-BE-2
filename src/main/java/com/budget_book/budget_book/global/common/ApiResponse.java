@@ -18,7 +18,7 @@ public class ApiResponse<T> {
 
     private final String message;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL) // 데이터가 null일 경우 JSON 결과에서 제외합니다.
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 데이터가 null일 경우 JSON 결과에서 제외
     private final T result;
 
     // 성공 시 응답 생성 메서드
