@@ -46,25 +46,33 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # 1. 실행 중인 이전 프로세스 종료 (SIGTERM 후 안 죽으면 SIGKILL)
+            # 1. 실행 중인 이전 프로세스 종료
             PID=$(pgrep -f .jar)
             if [ -n "$PID" ]; then
               echo "기존 프로세스 종료 시도 (PID: $PID)"
-              kill -15 $PID
-              sleep 5
-              # 여전히 살아있다면 강제 종료
+              # 뒤에 || true를 붙여서 종료 코드가 143이어도 스크립트를 계속 진행하게 함
+              kill -15 $PID || true
+              sleep 10
+              # 혹시 안 죽었다면 강제 종료
               kill -9 $PID 2>/dev/null || true
             fi
 
-            # 2. 기존 JAR 파일 관리 (파일이 쌓여서 생기는 와일드카드 오류 방지)
+            # 2. 파일 정리 (기존에 알려드린 것과 동일)
             mkdir -p /home/ubuntu/app/old
             mv /home/ubuntu/app/*.jar /home/ubuntu/app/old/ 2>/dev/null || true
-            mv /home/ubuntu/app/old/$(ls -t /home/ubuntu/app/old/ | head -1) /home/ubuntu/app/application.jar
+            # 가장 최근에 전송된 파일을 찾아서 이름을 고정 (와일드카드 문제 해결)
+            LATEST_JAR=$(ls -t /home/ubuntu/app/old/*.jar | head -1)
+            cp $LATEST_JAR /home/ubuntu/app/application.jar
 
-            # 3. 새 Jar 파일 실행 (메모리 제한 옵션 필수!)
-            echo "새 애플리케이션 배포 시작 (Limit: 512MB)..."
+            # 3. 새 Jar 파일 실행 (메모리 제한 필수)
+            echo "새 애플리케이션 배포 시작..."
             nohup java -Xmx512M -Xms512M -jar /home/ubuntu/app/application.jar > /home/ubuntu/app/nohup.out 2>&1 &
             
-            # 4. 실행 확인 (선택 사항)
+            # 4. 프로세스 실행 확인
             sleep 2
-            ps -ef | grep application.jarava -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
+            if pgrep -f application.jar > /dev/null; then
+              echo "배포 성공!"
+            else
+              echo "배포 실패! 로그를 확인하세요."
+              exit 1
+            fi
