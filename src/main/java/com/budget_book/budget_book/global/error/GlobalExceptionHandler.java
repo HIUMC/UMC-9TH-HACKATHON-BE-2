@@ -1,8 +1,8 @@
 package com.budget_book.budget_book.global.error;
 
 import com.budget_book.budget_book.global.common.ApiResponse;
-import com.budget_book.budget_book.global.common.code.BaseErrorCode;
-import com.budget_book.budget_book.global.error.exception.GeneralException;
+import com.budget_book.budget_book.global.apiPayload.code.BaseErrorCode;
+import com.budget_book.budget_book.global.common.GeneralException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
