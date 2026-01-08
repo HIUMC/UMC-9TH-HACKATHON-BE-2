@@ -34,6 +34,7 @@ public class Transaction {
     @Column(name = "img_url")
     private String imgUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Type type;
 

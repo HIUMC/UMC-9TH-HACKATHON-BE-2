@@ -17,5 +17,7 @@ public class TransactionReqDTO {
             String name
     ){}
 
-    public record DeleteAllDTO() {}
+    public record DeleteAllDTO(
+            String name
+    ) {}
 }
