@@ -66,7 +66,7 @@ public class CalendarService {
 
                     // 지출 합계 계산
                     BigInteger expenseSum = dayTransactions.stream()
-                            .filter(t -> t.getType() == Type.EXPENSE)
+                            .filter(t -> t.getType() == Type.OUTCOME)
                             .map(Transaction::getAmount)
                             .reduce(BigInteger.ZERO, BigInteger::add);
 
