@@ -2,6 +2,10 @@ name: Deploy to EC2
 
 on:
   push:
+    branches:
+      - "main"  # (추천) main 브랜치에 푸시될 때만 배포하도록 제한
+      - "develop"
+      - "feat/ci-cd"
 
 permissions:
   contents: read
@@ -21,7 +25,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Gradle 권한 부여 및 빌드 (테스트 제외 - 시간 단축용)
+      # 3. Gradle 권한 부여 및 빌드
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
@@ -35,29 +39,52 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           source: "./build/libs/*.jar"
-          target: "/home/ubuntu/app"
-          strip_components: 2 # build/libs 경로 제거하고 jar만 옮김
+          target: "/home/${{ secrets.EC2_USERNAME }}/app" # [수정됨] 경로를 변수와 app 폴더로 통일
+          strip_components: 2
 
-      # 5. EC2에 접속해서 실행 (SSH)
+      # 5. SSH로 접속하여 배포 스크립트 실행
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
+          port: 22
           script: |
-            # 실행 중인 Spring Boot 프로세스 찾아서 종료
-            PID=$(pgrep -f .jar)
-            if [ -z "$PID" ]; then
-              echo "실행 중인 프로세스가 없습니다."
+            # 1. 변수 설정
+            JAR_NAME="budget-book-0.0.1-SNAPSHOT.jar"
+            # [수정됨] SCP에서 보낸 경로와 정확히 일치시킴
+            DEPLOY_PATH="/home/${{ secrets.EC2_USERNAME }}/app"
+            
+            echo "=== 배포 시작 ==="
+            echo "Target Path: $DEPLOY_PATH"
+            
+            # 2. 실행 중인 프로세스 종료
+            # 'java' 명령어로 실행된 프로세스만 찾아 종료 (SSH 세션 종료 방지)
+            CURRENT_PID=$(pgrep -f "java.*$JAR_NAME")
+            
+            if [ -z "$CURRENT_PID" ]; then
+              echo "> 현재 구동 중인 애플리케이션이 없습니다."
             else
-              echo "실행 중인 프로세스 종료: $PID"
-              kill -9 $PID
+              echo "> 실행 중인 프로세스 종료: $CURRENT_PID"
+              kill -15 $CURRENT_PID
+              sleep 5
             fi
-
-            # 잠시 대기
-            sleep 5
-
-            # 새 Jar 파일 실행 (nohup으로 백그라운드 실행)
-            echo "새 애플리케이션 배포 시작..."
-            nohup java -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/nohup.out 2>&1 &
+            
+            # 3. 새 애플리케이션 배포
+            echo "> 새 애플리케이션 배포 시작..."
+            
+            # 폴더 이동 시도
+            if [ -d "$DEPLOY_PATH" ]; then
+                cd $DEPLOY_PATH
+            else
+                echo "Error: 배포 경로($DEPLOY_PATH)가 존재하지 않습니다."
+                echo "서버에 해당 폴더가 생성되었는지 확인해주세요."
+                exit 1
+            fi
+            
+            # 실행 (nohup)
+            # 기존 로그 파일이 너무 커지지 않게 날짜별로 관리하거나 덮어쓰는 것도 고려 가능
+            nohup java -jar $JAR_NAME > app.log 2>&1 &
+            
+            echo "=== 배포 완료 ==="
