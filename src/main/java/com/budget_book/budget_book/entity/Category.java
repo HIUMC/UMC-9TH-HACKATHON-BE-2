@@ -30,7 +30,7 @@ public class Category {
 
     @Enumerated(EnumType.STRING) // Enum 이름을 문자열로 DB에 저장 (권장)
     @Column(length = 10, nullable = false)
-    private CategoryType type;
+    private Type type;
 
     @CreatedDate
     @Column(updatable = false)
@@ -41,7 +41,7 @@ public class Category {
 
 
     // 생성자 (Builder 패턴을 사용하면 더 좋습니다)
-    public Category(User userId, String name, CategoryType type) {
+    public Category(User userId, String name, Type type) {
         this.user = userId;
         this.name = name;
         this.type = type;
