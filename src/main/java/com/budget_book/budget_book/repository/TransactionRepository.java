@@ -9,7 +9,11 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
+    
+    long deleteByUser_Name(String name);
+
     // 특정 유저의 시작일(start) ~ 종료일(end) 사이의 모든 내역 조회
     List<Transaction> findAllByUserAndDateBetween(User user, LocalDate start, LocalDate end);
+
 }
 

@@ -26,4 +26,18 @@ public class TransactionConverter {
                 .type(type)
                 .build();
     }
+
+    public static TransactionResDTO.PostTransactionDTO toDTO (
+            Transaction transaction
+    ){
+        return new TransactionResDTO.PostTransactionDTO(
+                transaction.getAmount(),
+                transaction.getDate(),
+                transaction.getMemo(),
+                transaction.getImgUrl(),
+                transaction.getType()
+        );
+    }
+
+
 }
