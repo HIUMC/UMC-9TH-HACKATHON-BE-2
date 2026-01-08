@@ -3,7 +3,9 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - #main  # (추천) main 브랜치에 푸시될 때만 배포하도록 제한
+      - "main"  # (추천) main 브랜치에 푸시될 때만 배포하도록 제한
+      - "develop"
+      - "feature/ci-cd"
 
 permissions:
   contents: read
