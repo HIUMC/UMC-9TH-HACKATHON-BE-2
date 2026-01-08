@@ -17,7 +17,7 @@ public class userService {
     @Transactional
     public User loginOrJoin(UserRequestDTO.LoginDTO request) {
         // 1. 닉네임으로 사용자 조회
-        return userRepository.findByname(request.getName())
+        return userRepository.findByName(request.getName())
                 .map(user -> {
                     // 2. 사용자가 있다면 비밀번호 비교
                     if (!user.getPassword().equals(request.getPassword())) {
