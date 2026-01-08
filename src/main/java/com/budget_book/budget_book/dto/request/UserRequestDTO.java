@@ -6,7 +6,7 @@ public class UserRequestDTO {
 
     @Getter
     public static class LoginDTO {
-        private String nickname;
+        private String name;
         private String password;
     }
 }

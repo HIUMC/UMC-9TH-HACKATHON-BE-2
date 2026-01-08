@@ -4,6 +4,7 @@ import com.budget_book.budget_book.dto.request.UserRequestDTO;
 import com.budget_book.budget_book.dto.response.UserResponseDTO;
 import com.budget_book.budget_book.entity.User;
 import com.budget_book.budget_book.global.apiPayload.ApiResponse;
+import com.budget_book.budget_book.global.apiPayload.code.GeneralSuccessCode;
 import com.budget_book.budget_book.service.userService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,6 @@ public class UserController {
                 .createdAt(user.getCreatedAt())
                 .build();
 
-        return ApiResponse.onSuccess(resultDTO);
+        return ApiResponse.onSuccess(GeneralSuccessCode.OK, result);
     }
 }

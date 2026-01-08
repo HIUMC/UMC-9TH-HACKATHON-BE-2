@@ -17,7 +17,7 @@ public class userService {
     @Transactional
     public User loginOrJoin(UserRequestDTO.LoginDTO request) {
         // 1. 닉네임으로 사용자 조회
-        return userRepository.findByNickname(request.getNickname())
+        return userRepository.findByname(request.getName())
                 .map(user -> {
                     // 2. 사용자가 있다면 비밀번호 비교
                     if (!user.getPassword().equals(request.getPassword())) {
@@ -29,7 +29,7 @@ public class userService {
                 .orElseGet(() -> {
                     // 3. 사용자가 없다면 회원가입 진행
                     User newUser = User.builder()
-                            .name(request.getNickname())
+                            .name(request.getName())
                             .password(request.getPassword())
                             .build();
                     return userRepository.save(newUser);
