@@ -4,6 +4,7 @@ import com.budget_book.budget_book.dto.request.CategoryCreateRequest;
 import com.budget_book.budget_book.dto.response.CategoryResponse;
 import com.budget_book.budget_book.global.apiPayload.ApiResponse;
 import com.budget_book.budget_book.global.apiPayload.code.BaseSuccessCode;
+import com.budget_book.budget_book.global.apiPayload.code.GeneralSuccessCode;
 import com.budget_book.budget_book.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,8 @@ public class CategoryController {
     @GetMapping
     @Operation(summary = "카테고리 목록 조회", description = "특정 유저의 카테고리 목록을 조회합니다.")
     public ApiResponse<List<CategoryResponse>> getCategories(@RequestParam String nickname) {
-        return ApiResponse.onSuccess(null, null);
+        List<CategoryResponse> result = categoryService.getCategories(nickname);
+        return ApiResponse.onSuccess(GeneralSuccessCode.OK, result);
     }
 
     /**
@@ -42,7 +44,7 @@ public class CategoryController {
             @RequestBody CategoryCreateRequest request
     ) {
         categoryService.createCategory(nickname, request);
-        return ApiResponse.onSuccess(null, null);
+        return ApiResponse.onSuccess(GeneralSuccessCode.OK, null);
     }
 
     /**
@@ -53,6 +55,6 @@ public class CategoryController {
     @Operation(summary = "카테고리 삭제", description = "카테고리 ID를 이용하여 삭제합니다.")
     public ApiResponse<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
-        return ApiResponse.onSuccess(null, null);
+        return ApiResponse.onSuccess(GeneralSuccessCode.OK, null);
     }
 }
