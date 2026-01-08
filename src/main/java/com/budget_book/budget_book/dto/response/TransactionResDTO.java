@@ -10,7 +10,7 @@ public class TransactionResDTO {
 
     @Builder
     public record DeleteAllDTO(
-            String name
+            Long deletedCount
     ){}
 
     @Builder

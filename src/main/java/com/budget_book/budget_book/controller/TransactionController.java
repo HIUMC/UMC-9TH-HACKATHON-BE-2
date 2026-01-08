@@ -47,6 +47,10 @@ public class TransactionController {
     public ApiResponse<TransactionResDTO.DeleteAllDTO> deleteTransaction(
             @RequestBody TransactionReqDTO.DeleteAllDTO dto
     ){
-        return null;
+        long deleted = transactionService.deleteAll(dto);
+        return ApiResponse.onSuccess(
+                TransactionSuccessCode.DELETED,
+                new TransactionResDTO.DeleteAllDTO(deleted)
+        );
     }
 }

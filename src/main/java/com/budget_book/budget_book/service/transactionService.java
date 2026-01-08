@@ -41,4 +41,11 @@ public class transactionService {
         return transactionRepository.save(tx);
     }
 
+    public long deleteAll(TransactionReqDTO.DeleteAllDTO dto){
+        userRepository.findByName(dto.name())
+                .orElseThrow(()-> new IllegalArgumentException("유저 없음: " + dto.name()));
+
+        return transactionRepository.deleteByUser_Name(dto.name());
+    }
+
 }
